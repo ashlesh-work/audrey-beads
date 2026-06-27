@@ -1,0 +1,23 @@
+# Production docker-compose for Portainer (pulls pre-built image from GHCR)
+services:
+  app:
+    image: ghcr.io/ashlesh-work/audrey-beads:latest
+    container_name: audreys-beads
+    environment:
+      - NODE_ENV=production
+      - PORT=8493
+      - DATA_DIR=/app/data
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - REMOVE_BG=${REMOVE_BG:-imgly}
+      - COOKIE_SECURE=${COOKIE_SECURE:-true}
+    volumes:
+      - beads_data:/app/data
+    expose:
+      - "8493"
+    ports:
+      - "${APP_PORT:-8493}:8493"
+    restart: unless-stopped
+
+volumes:
+  beads_data:
