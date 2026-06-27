@@ -1,0 +1,28 @@
+# Fully local — one container, one SQLite data volume. No external services.
+# Your existing reverse proxy / tunnel can map a subdomain to this container on the
+# docker network (service "app", port 8493). Copy .env.example -> .env first.
+services:
+  app:
+    build: .
+    container_name: audreys-beads
+    environment:
+      - NODE_ENV=production
+      - PORT=8493
+      - DATA_DIR=/app/data
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - REMOVE_BG=${REMOVE_BG:-imgly}
+      - COOKIE_SECURE=${COOKIE_SECURE:-true}
+    volumes:
+      - beads_data:/app/data
+    # Your proxy reaches the app on the docker network at  http://app:8493
+    expose:
+      - "8493"
+    # Optional: also publish on the host for direct testing. Non-standard port to avoid
+    # clashing with your other containers. Remove this block if your proxy handles routing.
+    ports:
+      - "${APP_PORT:-8493}:8493"
+    restart: unless-stopped
+
+volumes:
+  beads_data:
